@@ -98,7 +98,7 @@ def depthFirstSearch(problem):
     while not nextNodes.isEmpty():
         currNode = nextNodes.pop();
         if (currNode[0] not in visitedSet): 
-            print("hi")
+            # print("hi")
             visitedSet.add(currNode[0])
             if (problem.isGoalState(currNode[0])):
                 return currNode[1]
@@ -172,8 +172,23 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     Search the node that has the lowest combined cost and heuristic first.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    nextNodes = util.PriorityQueue()
+    visitedSet = set()
+    nextNodes.push((problem.getStartState(), [], 0),0)
+    while not nextNodes.isEmpty():
+        currNode = nextNodes.pop()
+        # print(heuristic(currNode[0],problem))
+        if (currNode[0] not in visitedSet): 
+            visitedSet.add(currNode[0])
+            if (problem.isGoalState(currNode[0])):
+                return currNode[1]
+            for nextVal in problem.getSuccessors(currNode[0]):
+                if (not nextVal[0] in visitedSet):
+                    #Additional heuristic feature added (really just adding heuristic to priority)
+                    nextNodes.push((nextVal[0], currNode[1] + [nextVal[1]], 
+                                    nextVal[2] + currNode[2]), 
+                                    nextVal[2] + currNode[2] + heuristic(nextVal[0],problem))
+    # util.raiseNotDefined()
 
 # Abbreviations
 bfs = breadthFirstSearch
