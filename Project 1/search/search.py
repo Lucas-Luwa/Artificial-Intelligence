@@ -91,27 +91,25 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    # print("Start:", problem.getStartState())
-    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     nextNodes = util.Stack()
     #Tuple needed here 
     nextNodes.push((problem.getStartState(), []))
     visitedSet = set()
-    while True:
+    while not nextNodes.isEmpty():
         currNode = nextNodes.pop();
-        if (problem.isGoalState(currNode[0])):
-            # print("hi")
-            return currNode[1]
-        if not currNode[0] in visitedSet:
-            #Marking node as visited
+        if (currNode[0] not in visitedSet): 
+            print("hi")
             visitedSet.add(currNode[0])
+            if (problem.isGoalState(currNode[0])):
+                return currNode[1]
+            # if not currNode[0] in visitedSet:
+                #Marking node as visited
+                # visitedSet.add(currNode[0])
             for nextVal in problem.getSuccessors(currNode[0]):
-                # print("hi")
                 # Contains successor
                 if (not nextVal[0] in visitedSet):
                     nextNodes.push((nextVal[0], currNode[1] + [nextVal[1]]))
-    # util.raiseNotDefined()
+        # util.raiseNotDefined()
 
 
 def breadthFirstSearch(problem):
@@ -122,16 +120,17 @@ def breadthFirstSearch(problem):
     nextNodes = util.Queue()
     visitedSet = set()
     nextNodes.push((problem.getStartState(), []))
-    visitedSet.add(problem.getStartState())
+    # visitedSet.add(problem.getStartState())
     while not nextNodes.isEmpty():
         currNode = nextNodes.pop()
-        if (problem.isGoalState(currNode[0])):
-            # print("hi")
-            return currNode[1]
-        for nextVal in problem.getSuccessors(currNode[0]):
-                if (not nextVal[0] in visitedSet):
-                    visitedSet.add(nextVal[0])
-                    nextNodes.push((nextVal[0], currNode[1] + [nextVal[1]]))
+        if (currNode[0] not in visitedSet): 
+            visitedSet.add(currNode[0])
+            if (problem.isGoalState(currNode[0])):
+                return currNode[1]
+            for nextVal in problem.getSuccessors(currNode[0]):
+                    if (not nextVal[0] in visitedSet):
+                        # visitedSet.add(nextVal[0])
+                        nextNodes.push((nextVal[0], currNode[1] + [nextVal[1]]))
 
 
 def uniformCostSearch(problem):
@@ -142,16 +141,22 @@ def uniformCostSearch(problem):
     nextNodes = util.PriorityQueue()
     visitedSet = set()
     nextNodes.push((problem.getStartState(), [], 0),0)
-    visitedSet.add(problem.getStartState())
+    # visitedSet.add(problem.getStartState())
     while not nextNodes.isEmpty():
         currNode = nextNodes.pop()
-        # print(currNode[2])
-        if (problem.isGoalState(currNode[0])):
-            return currNode[1]
-        for nextVal in problem.getSuccessors(currNode[0]):
+        if (currNode[0] not in visitedSet): 
+            # print("hello")
+            visitedSet.add(currNode[0])
+            if (problem.isGoalState(currNode[0])):
+                return currNode[1]
+            for nextVal in problem.getSuccessors(currNode[0]):
+                # print("in loop", nextVal[0])
                 if (not nextVal[0] in visitedSet):
-                    visitedSet.add(nextVal[0])
+                    # print("im here", nextVal[0])
+                    # visitedSet.add(nextVal[0])
                     nextNodes.push((nextVal[0], currNode[1] + [nextVal[1]], nextVal[2] + currNode[2]), nextVal[2] + currNode[2])
+                # print(nextNodes.heap)
+
 
 
 def nullHeuristic(state, problem=None):
