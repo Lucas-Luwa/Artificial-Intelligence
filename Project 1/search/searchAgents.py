@@ -546,14 +546,15 @@ class ClosestDotSearchAgent(SearchAgent):
         """
         Returns a path (a list of actions) to the closest dot, starting from gameState.
         """
-        # Here are some useful elements of the startState
+        # Here are some useful elements of the startState (first 3 unused)
         startPosition = gameState.getPacmanPosition()
         food = gameState.getFood()
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.uniformCostSearch(AnyFoodSearchProblem(gameState));
+        # util.raiseNotDefined()
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -588,10 +589,12 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         that will complete the problem definition.
         """
         x, y = state
-
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        # print(self.food)
+        x, y = state
+        if self.food[x][y] == True:
+            return True
+        return False
 
 ##################
 # Mini-contest 1 #
