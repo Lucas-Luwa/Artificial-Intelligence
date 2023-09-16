@@ -216,7 +216,6 @@ class PositionSearchProblem(search.SearchProblem):
         if state not in self._visited:
             self._visited[state] = True
             self._visitedlist.append(state)
-
         return successors
 
     def getCostOfActions(self, actions):
@@ -351,8 +350,6 @@ class CornersProblem(search.SearchProblem):
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             # Ensure not wall
-            # print(self.walls[nextx][nexty])
-            # print(self.corners)
             if self.walls[nextx][nexty] == False: 
                 newState = list(state[1])
                 if (nextx, nexty) in self.corners:
@@ -405,7 +402,34 @@ def cornersHeuristic(state, problem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0  # Default to trivial solution
+    activeCorners = []
+    for corner in corners:
+        # print(activeCorners)
+        # print("XXX") #Separator
+        if not state[1][problem.corners.index(corner)]:
+            # print(corners)
+            # print(state[1])
+            activeCorners.append(corner)
+
+    #Shortest path 
+    retV = 0
+    curr = state[0]
+    # print("NEW CYCLE")
+    while len(activeCorners) > 0:
+        currTotal = None
+        # print(curr)
+        # print(activeCorners)
+        nextNode = None
+        for element in activeCorners:
+            if currTotal == None or (abs(curr[0] - element[0]) + abs(curr[1] - element[1])) < currTotal:
+                currTotal = (abs(curr[0] - element[0]) + abs(curr[1] - element[1]))
+                nextNode = element
+        curr = nextNode
+        activeCorners.remove(nextNode)
+        # print(retV, "X", currTotal) #KEY
+        retV += currTotal
+    # print(retV)
+    return retV  # Default to trivial solution
 
 
 class AStarCornersAgent(SearchAgent):
