@@ -431,7 +431,6 @@ def cornersHeuristic(state, problem):
     # print(retV)
     return retV  # Default to trivial solution
 
-
 class AStarCornersAgent(SearchAgent):
     """
     A SearchAgent for FoodSearchProblem using A* and your foodHeuristic
@@ -542,9 +541,62 @@ def foodHeuristic(state, problem):
     Submissions with mazeDistance will receive a 0 for this question.
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    # foodGrid = foodGrid.asList()
+    # # print(foodGrid)
+    # if len(foodGrid) == 0: return 0
+    # maxFoodDistance = -12823
+    # minFoodDistance = 128238606
+    # currMin = None; currMax = None
+    # for element in foodGrid:
+    #     if (abs(position[0] - element[0]) + abs(position[1] - element[1])) > maxFoodDistance:
+    #         maxFoodDistance = (abs(position[0] - element[0]) + abs(position[1] - element[1]))
+    #         currMax = element
+    #     if (abs(position[0] - element[0]) + abs(position[1] - element[1])) < minFoodDistance:
+    #         currMin = element
+    #         minFoodDistance = (abs(position[0] - element[0]) + abs(position[1] - element[1]))
+    
+    # # retV = minFoodDistance
+    # retV = minFoodDistance
+    # retV += (abs(currMin[0] - currMax[0]) + abs(currMax[1] - currMin[1]))
+    # return retV
+    #4/4 but no EC
 
+
+    #ATTEMPT 2
+    foodGrid = foodGrid.asList()
+    # print(foodGrid)
+    if len(foodGrid) == 0: return 0
+    maxFromMin = -12823 #Some negative #
+    minFromOrigin = 128238606 #Some absurd number
+    minEle = None; maxEle = None
+    for element in foodGrid:
+        # if (abs(position[0] - element[0]) + abs(position[1] - element[1])) > maxFoodDistance:
+        #     maxFoodDistance = (abs(position[0] - element[0]) + abs(position[1] - element[1]))
+        #     currMax = element
+        if (abs(position[0] - element[0]) + abs(position[1] - element[1])) < minFromOrigin:
+            minEle = element
+            minFromOrigin = (abs(position[0] - element[0]) + abs(position[1] - element[1]))
+    
+    for element in foodGrid:
+        if (abs(minEle[0] - element[0]) + abs(minEle[1] - element[1])) > maxFromMin:
+            maxFromMin = (abs(minEle[0] - element[0]) + abs(minEle[1] - element[1]))
+            maxEle = element
+
+    # #connected counter
+    # connCount = 0
+    # visitedSet = set()
+    # currQ = set()
+    # for element in foodGrid:
+    #     if (element[0], element[1] - 1) in foodGrid or (element[0], element[1] + 1) in foodGrid or \
+    #         (element[0] - 1, element[1]) in foodGrid or (element[0] + 1, element[1]) in foodGrid:
+
+    #         connCount+=1;
+    # print(connCount)
+    # print(foodGrid)
+    # print("XX")
+    return maxFromMin + minFromOrigin
+    # if connCount == 0: connCount = 1
+    # return minFromOrigin + len(foodGrid) - 1
 
 class ClosestDotSearchAgent(SearchAgent):
     """
@@ -642,6 +694,21 @@ class ApproximateSearchAgent(Agent):
         Directions.{North, South, East, West, Stop}
         """
         "*** YOUR CODE HERE ***"
+        # print(state)
+        # print(search.uniformCostSearch(AnyFoodSearchProblem(state)))
+        # print("X")
+        # dict = {"East": Directions.EAST, "North": Directions.NORTH, "West": Directions.WEST, "South": Directions.WEST}
+        # print(dict.get(search.uniformCostSearch(AnyFoodSearchProblem(state))[0]))
+        # print(Directions.EAST)
+        # return dict.get(search.uniformCostSearch(AnyFoodSearchProblem(state))[0])
+        print(state)
+        if search.aStarSearch(AnyFoodSearchProblem(state), cornersHeuristic)[0] == "East": return Directions.EAST
+        elif search.aStarSearch(AnyFoodSearchProblem(state), cornersHeuristic)[0] == "West": return Directions.WEST
+        elif search.aStarSearch(AnyFoodSearchProblem(state), cornersHeuristic)[0] == "North": return Directions.NORTH
+        else: return Directions.SOUTH
+
+        # return Directions.EAST;
+        # print(Directions)
         util.raiseNotDefined()
 
 
