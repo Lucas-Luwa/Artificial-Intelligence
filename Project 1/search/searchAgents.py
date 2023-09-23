@@ -1,4 +1,7 @@
 # searchAgents.py
+
+# Moontashir Siam and I collaborated on ideas for the foodHeuristics function
+
 # ---------------
 # Licensing Information:  You are free to use or extend these projects for 
 # educational purposes provided that (1) you do not distribute or publish 
@@ -568,7 +571,8 @@ def foodHeuristic(state, problem):
     if len(foodGrid) == 0: return 0
     maxFromMin = -12823 #Some negative #
     minFromOrigin = 128238606 #Some absurd number
-    minEle = None; maxEle = None
+    midMaxMin = 128238606
+    minEle = None; maxEle = None; midEle = None
     for element in foodGrid:
         # if (abs(position[0] - element[0]) + abs(position[1] - element[1])) > maxFoodDistance:
         #     maxFoodDistance = (abs(position[0] - element[0]) + abs(position[1] - element[1]))
@@ -581,6 +585,10 @@ def foodHeuristic(state, problem):
         if (abs(minEle[0] - element[0]) + abs(minEle[1] - element[1])) > maxFromMin:
             maxFromMin = (abs(minEle[0] - element[0]) + abs(minEle[1] - element[1]))
             maxEle = element
+    for element in foodGrid:
+        if abs((abs(minEle[0] - element[0]) + abs(minEle[1] - element[1])) - (abs(maxEle[0] - element[0]) + abs(maxEle[1] - element[1]))) < midMaxMin:
+            midMaxMin = abs((abs(minEle[0] - element[0]) + abs(minEle[1] - element[1])) - (abs(maxEle[0] - element[0]) + abs(maxEle[1] - element[1])))
+            midEle = element
 
     # #connected counter
     # connCount = 0
@@ -594,7 +602,8 @@ def foodHeuristic(state, problem):
     # print(connCount)
     # print(foodGrid)
     # print("XX")
-    return maxFromMin + minFromOrigin
+    additional = (abs(minEle[0] - midEle[0]) + abs(minEle[1] - midEle[1])) + (abs(maxEle[0] - midEle[0]) + abs(maxEle[1] - midEle[1]))
+    return minFromOrigin + additional# 8178
     # if connCount == 0: connCount = 1
     # return minFromOrigin + len(foodGrid) - 1
 
