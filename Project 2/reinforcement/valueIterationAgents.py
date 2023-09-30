@@ -62,7 +62,18 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
-
+        for nmv in range(self.iterations):
+            valueSet = self.values.copy()
+            # print(valueSet)
+            for element in self.mdp.getStates():
+                # print(element)
+                if self.mdp.isTerminal(element): continue
+                currMax = -12823
+                for action in self.mdp.getPossibleActions(element):
+                    if self.computeQValueFromValues(element, action) > currMax:
+                        currMax = self.computeQValueFromValues(element, action)
+                valueSet[element] = currMax
+            self.values = valueSet;
 
     def getValue(self, state):
         """
@@ -77,7 +88,14 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        rV = 0
+        # print(states)
+        for element in self.mdp.getTransitionStatesAndProbs(state, action):
+            # print(element)
+            rV += element[1]*self.discount*self.values[element[0]]
+            rV += element[1]*(self.mdp.getReward(state, action, element[0]))
+        return rV
+        # util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
         """
@@ -89,7 +107,14 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        currMax = -12823
+        retV = None
+        if self.mdp.isTerminal(state): return None
+        for element in self.mdp.getPossibleActions(state):
+            if self.computeQValueFromValues(state, element) > currMax:
+                retV = element
+                currMax = self.computeQValueFromValues(state, element)
+        return retV
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)

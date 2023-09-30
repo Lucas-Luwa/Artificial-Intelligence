@@ -17,6 +17,7 @@ from learningAgents import ReinforcementAgent
 from featureExtractors import *
 
 import random,util,math
+# import numpy as np
 
 class QLearningAgent(ReinforcementAgent):
     """
@@ -43,6 +44,7 @@ class QLearningAgent(ReinforcementAgent):
         ReinforcementAgent.__init__(self, **args)
 
         "*** YOUR CODE HERE ***"
+        self.values = util.Counter()
 
     def getQValue(self, state, action):
         """
@@ -51,8 +53,7 @@ class QLearningAgent(ReinforcementAgent):
           or the Q node value otherwise
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        return self.values[(state, action)]
 
     def computeValueFromQValues(self, state):
         """
@@ -62,7 +63,11 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if len(self.getLegalActions(state)) == 0: return 0.0
+        currSet = []
+        for element in self.getLegalActions(state):
+            currSet.append(self.getQValue(state, element))
+        return max(currSet)
 
     def computeActionFromQValues(self, state):
         """
@@ -71,8 +76,15 @@ class QLearningAgent(ReinforcementAgent):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        bestAction = None
+        currBest = -12823
+        if len(self.getLegalActions(state)) == 0: return bestAction
+        for element in self.getLegalActions(state):
+          if self.getQValue(state, element) > currBest:
+            bestAction = element
+            currBest = self.getQValue(state, element)
+        return bestAction
+    
     def getAction(self, state):
         """
           Compute the action to take in the current state.  With
@@ -88,9 +100,11 @@ class QLearningAgent(ReinforcementAgent):
         legalActions = self.getLegalActions(state)
         action = None
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
-        return action
+        if len(legalActions) == 0: return action
+        if (util.flipCoin(self.epsilon)):
+            return random.choice(legalActions)
+        else:
+            return self.computeActionFromQValues(state)
 
     def update(self, state, action, nextState, reward):
         """
@@ -102,7 +116,7 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        self.values[(state, action)] = (1 - self.alpha) * self.values[(state, action)] + self.alpha*(reward + self.discount * self.computeValueFromQValues(nextState))
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
@@ -166,7 +180,16 @@ class ApproximateQAgent(PacmanQAgent):
         """
         features = self.featExtractor.getFeatures(state, action)
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
+        weights = self.getWeights()
+        retV = 0
+        # print(features)
+        # print(weights)
+        for i in features:
+          retV += weights[i]*features[i]
+        return retV
+        # return np.dot(weights, features) #no numpy allowed...  :(
+
 
     def update(self, state, action, nextState, reward):
         """
@@ -174,7 +197,13 @@ class ApproximateQAgent(PacmanQAgent):
         """
         features = self.featExtractor.getFeatures(state, action)
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
+        # #difference=(r+γmaxa′Q(s′,a′))−Q(s,a)
+        # #Also, wi←wi+α⋅difference⋅fi(s,a)
+
+        diff = reward + self.discount*self.getValue(nextState) - self.getQValue(state, action)
+        for i in features:
+          self.weights[i] = self.weights[i] + self.alpha * diff * features[i]
 
     def final(self, state):
         "Called at the end of each game."
@@ -185,4 +214,5 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
+            #No code required. we good
             pass
