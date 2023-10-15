@@ -292,11 +292,13 @@ class ExactInference(InferenceModule):
         current position. However, this is not a problem, as Pacman's current
         position is known.
         """
+        #def getObservationProb(self, noisyDistance, pacmanPosition, ghostPosition, jailPosition):
+
         "*** YOUR CODE HERE ***"
-
-
+        for currPos in self.allPositions:
+            self.beliefs[currPos] = self.beliefs[currPos] * self.getObservationProb(observation, gameState.getPacmanPosition(),currPos, self.getJailPosition())
         self.beliefs.normalize()
-        raiseNotDefined()
+        # raiseNotDefined()
 
     def elapseTime(self, gameState):
         """
@@ -318,14 +320,17 @@ class ExactInference(InferenceModule):
 
         """
         "*** YOUR CODE HERE ***"
+        rV = util.Counter()
+        for currPos in self.allPositions:
+            actionDist = self.getPositionDistribution(gameState, currPos)
+            for currActDist in actionDist:
+                rV[currActDist] += self.beliefs[currPos] * actionDist[currActDist]
 
-
-
-
+        self.beliefs = rV
         self.beliefs.normalize()
 
 
-        raiseNotDefined()
+        # raiseNotDefined()
 
     def getBeliefDistribution(self):
         return self.beliefs
