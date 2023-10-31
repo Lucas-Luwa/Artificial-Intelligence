@@ -11,6 +11,7 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
+#Worked with Moontashir Siam on brainstorming ideas 
 
 import util
 from game import Agent
@@ -167,5 +168,26 @@ class GreedyBustersAgent(BustersAgent):
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
              if livingGhosts[i+1]]
         "*** YOUR CODE HERE ***"
+        listOfPos = []
+        ghostPos = None
+        currDist = 12823
+        returnedAct = None
+        shortActDist = 12823
 
-        util.raiseNotDefined()
+        for spookySeasonDist in livingGhostPositionDistributions:
+            currCandidatePos = None; currPosProb = 0
+            for candidatePos, candidateProb in spookySeasonDist.items():
+                if candidateProb > currPosProb: 
+                    currPosProb = candidateProb; currCandidatePos = candidatePos
+            listOfPos.append(currCandidatePos)
+        
+        for pos in listOfPos:
+            d = self.distancer.getDistance(pos, pacmanPosition)
+            if d < currDist:
+                currDist = d; ghostPos = pos
+
+        for act in legal:
+            newD = self.distancer.getDistance(ghostPos, Actions.getSuccessor(pacmanPosition, act))
+            if shortActDist > newD:
+                returnedAct = act; shortActDist = newD
+        return returnedAct
