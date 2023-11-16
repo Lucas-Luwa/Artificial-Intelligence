@@ -41,6 +41,7 @@ class Perceptron(object):
             the value.
         """
         """YOUR CODE"""
+        return 1.0/(1 + exp(-value))
 
     def sigmoidActivation(self, inActs):
         """
@@ -55,6 +56,16 @@ class Perceptron(object):
             The value of the sigmoid of the weighted input
         """
         """YOUR CODE"""
+        initialActs = [1] + inActs
+        tot = 0
+        for i in range(len(self.weights)):
+            tot += initialActs[i] * self.weights[i] 
+        # print(len(initialActs))
+        # print("X")
+        # print(len(self.weights))
+        # print(tot)
+        return self.sigmoid(tot)
+
 
     def sigmoidDeriv(self, value):
         """
@@ -68,6 +79,8 @@ class Perceptron(object):
             parametrized by the value.
         """
         """YOUR CODE"""
+        # print(value)
+        return exp(-value)/pow(1+exp(-value),2)
 
     def sigmoidActivationDeriv(self, inActs):
         """
@@ -82,6 +95,11 @@ class Perceptron(object):
             The derivative of the sigmoid of the weighted input
         """
         """YOUR CODE"""
+        initialActs = [1] + inActs
+        tot = 0
+        for i in range(len(self.weights)):
+            tot += initialActs[i] * self.weights[i] 
+        return self.sigmoidDeriv(tot)
 
     def updateWeights(self, inActs, alpha, delta):
         """
@@ -100,6 +118,13 @@ class Perceptron(object):
         """
         totalModification = 0
         """YOUR CODE"""
+        inActs = [1] + inActs
+
+        for i in range(len(self.weights)):
+            modWeight = delta * alpha * inActs[i]
+            totalModification += abs(modWeight)
+            self.weights[i] += modWeight
+
         return totalModification
 
     def setRandomWeights(self):
@@ -173,6 +198,14 @@ class NeuralNet(object):
             lists of the output values of all perceptrons in each layer.
         """
         """YOUR CODE"""
+        rV = [inActs]
+        for currlayer in self.layers:
+            currActs = []
+            for element in currlayer:
+                currActs.append(element.sigmoidActivation(inActs))
+            rV.append(currActs)
+            inActs = currActs
+        return rV
 
     def backPropLearning(self, examples, alpha):
         """
@@ -201,15 +234,18 @@ class NeuralNet(object):
             #keep track of deltas to use in weight change
             deltas = []
             #Neural net output list
-            allLayerOutput = """FILL IN - neural net output list computation"""
+            allLayerOutput = self.feedForward(example[0]) #Check if error
             lastLayerOutput = allLayerOutput[-1]
             #Empty output layer delta list
             outDelta = []
             #iterate through all output layer neurons
             for outputNum in range(len(example[1])):
-                gPrime = self.outputLayer[outputNum].sigmoidActivationDeriv("""FILL IN""")
-                error = """FILL IN - error for this neuron"""
-                delta = """FILL IN - delta for this neuron"""
+                # print(lastLayerOutput)
+                # print(allLayerOutput[-2])
+                # print(allLayerOutput)
+                gPrime = self.outputLayer[outputNum].sigmoidActivationDeriv(allLayerOutput[-2]) #check if error
+                error = example[1][outputNum] - lastLayerOutput[outputNum] #Check if error
+                delta = gPrime * error #Check if error
                 averageError+=error*error/2
                 outDelta.append(delta)
             deltas.append(outDelta)
@@ -224,10 +260,15 @@ class NeuralNet(object):
                 hiddenDelta = []
                 #Iterate through all neurons in this layer
                 for neuronNum in range(len(layer)):
-                    gPrime = layer[neuronNum].sigmoidActivationDeriv("""FILL IN""")
-                    delta = """FILL IN - delta for this neuron
-                               Carefully look at the equation here,
-                                it is easy to do this by intuition incorrectly"""
+                    gPrime = layer[neuronNum].sigmoidActivationDeriv(allLayerOutput[layerNum])
+                    # delta = """FILL IN - delta for this neuron
+                            #    Carefully look at the equation here,
+                            #     it is easy to do this by intuition incorrectly"""
+                    delta = 0
+                    for j in range(len(nextLayer)):
+                        weight = nextLayer[j].weights[1 + neuronNum]
+                        delta = delta + weight * deltas[0][j]
+                    delta = delta * gPrime
                     hiddenDelta.append(delta)
                 deltas = [hiddenDelta]+deltas
 
@@ -238,7 +279,7 @@ class NeuralNet(object):
             for numLayer in range(0,self.numLayers):
                 layer = self.layers[numLayer]
                 for numNeuron in range(len(layer)):
-                    weightMod = layer[numNeuron].updateWeights("""FILL IN""")
+                    weightMod = layer[numNeuron].updateWeights(allLayerOutput[numLayer], alpha, deltas[numLayer][numNeuron])
                     averageWeightChange += weightMod
                     numWeights += layer[numNeuron].inSize
             #end for each example
@@ -285,7 +326,7 @@ def buildNeuralNet(examples, alpha=0.1, weightChangeThreshold = 0.00008,hiddenLa
     """
     iteration=0
     trainError=0
-    weightMod=0
+    weightMod=float('inf')
 
     """
     Iterate for as long as it takes to reach weight modification threshold
@@ -295,6 +336,19 @@ def buildNeuralNet(examples, alpha=0.1, weightChangeThreshold = 0.00008,hiddenLa
         #else :
         #    print '.',
 
+    #Modified
+    while iteration < maxItr and weightMod > weightChangeThreshold :
+        # print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        # print(maxItr, iteration)
+        # Your training code goes here
+        # Update weights, calculate training error, and weight modification
+        # You need to implement the training loop
+        trainError, weightMod = nnet.backPropLearning(examplesTrain, alpha)
+        if iteration % 10 == 0:
+            print('! on iteration %d; training error %f and weight change %f' % (iteration, trainError, weightMod))
+        else:
+            print('.', end= "")
+        iteration += 1
 
     time = datetime.now().time()
     print ('Finished after %d iterations at time %s with training error %f and weight change %f'%(iteration,str(time),trainError,weightMod))
@@ -308,10 +362,22 @@ def buildNeuralNet(examples, alpha=0.1, weightChangeThreshold = 0.00008,hiddenLa
     testError = 0
     testCorrect = 0
 
-    testAccuracy=0#num correct/num total
+    for inputs, target in examplesTest:
+        ffResults = nnet.feedForward(inputs)[-1]
+        # print(ffResults)
+        flag = False
+        for i in range(len(ffResults)):
+            if round(ffResults[i]) != target[i]:
+                testError += 1
+                flag = True
+                break
+        if not flag:
+            testCorrect+=1
+
+    testAccuracy = testCorrect / len(examplesTest)#num correct/num total
 
     print('Feed Forward Test correctly classified %d, incorrectly classified %d, test accuracy %f\n'%(testCorrect,testError,testAccuracy))
 
     """return something"""
 
-
+    return nnet, testAccuracy   
