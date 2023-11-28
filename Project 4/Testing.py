@@ -18,4 +18,5 @@ carData = buildExamplesFromCarData()
 def testCarData(hiddenLayers = [16]):
     return buildNeuralNet(carData, maxItr = 200,hiddenLayerList = hiddenLayers)
 
-testCarData()
+# testCarData()
+

@@ -380,4 +380,4 @@ def buildNeuralNet(examples, alpha=0.1, weightChangeThreshold = 0.00008,hiddenLa
 
     """return something"""
 
-    return nnet, testAccuracy   
+    return [nnet, testAccuracy] 
