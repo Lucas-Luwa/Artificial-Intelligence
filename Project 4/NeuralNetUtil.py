@@ -73,6 +73,40 @@ def getNNCarData(fileString ="datasets/car.data.txt", limit=100000 ):
     random.shuffle(examples)
     return examples
 
+def getNNxorData(fileString ="datasets/xor.data.txt", limit=100000 ):
+    """
+    returns limit # of examples from file passed as string
+    """
+    examples=[]
+    attrValues={}
+    data = open(fileString)
+    attrs = ['x','y']
+    attr_values = [['0', '1'],['0', '1']]
+    
+    attrNNList = [('x', {'0' : getList(1,2), '1' : getList(2,2)}),
+                 ('y',{'0' : getList(1,2), '1' : getList(2,2)})]
+
+    classNNList = {'0' : [1,0], '1' : [0,1]}
+    
+    for index in range(len(attrs)):
+        attrValues[attrs[index]]=attrNNList[index][1]
+
+    lineNum = 0
+    for line in data:
+        inVec = []
+        outVec = []
+        count=0
+        for val in line.split(','):
+            if count==2:
+                outVec = classNNList[val[0]]
+            else:
+                inVec.append(attrValues[attrs[count]][val])
+            count+=1
+        examples.append((inVec,outVec))
+        lineNum += 1
+        if (lineNum >= limit):
+            break
+    return examples
 
 def buildExamplesFromPenData(size=10000):
     """
@@ -127,7 +161,20 @@ def buildExamplesFromCarData(size=200):
     carDataTestList = carDataTrainList[-size:]
     carDataTrainList = carDataTrainList[:-size]
     return carDataTrainList, carDataTestList
-    
+
+def buildExamplesFromxorData(size=4):
+    xorD = getNNxorData()
+    xorDataList = []
+    for cdRec in xorD:
+        tmpInVec = []
+        for cdInRec in cdRec[0] :
+            for val in cdInRec :
+                tmpInVec.append(val)
+        tmpList = (tmpInVec, cdRec[1])
+        xorDataList.append(tmpList)
+    # xorDataList = carDataTrainList[-size:]
+    return xorDataList, xorDataList
+
 
 def buildPotentialHiddenLayers(numIns, numOuts):
     """

@@ -4,6 +4,8 @@ from datetime import datetime
 from math import exp
 from random import random, randint, choice
 
+#Collaborated with Moontashir Siam on brainstorming various ideas 
+
 class Perceptron(object):
     """
     Class to represent a single Perceptron in the net.
