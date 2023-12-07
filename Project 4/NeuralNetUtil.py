@@ -9,13 +9,43 @@ def getNNPenData(fileString="datasets/pendigits.txt", limit=100000):
     lineNum = 0
     for line in data:
         inVec = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        outVec = [0,0,0,0,0,0,0,0,0,0]                      #which digit is output
+        outVec = [0,0,0,0,0,0,0,0,0,0] 
         count=0
         for val in line.split(','):
             if count==16:
                 outVec[int(val)] = 1
             else:
                 inVec[count] = int(val)/100.0               #need to normalize values for inputs
+            count+=1
+        examples.append((inVec,outVec))
+        lineNum += 1
+        if (lineNum >= limit):
+            break
+    return examples
+
+# Extra Credit Q8
+def getNNExtraData(fileString="", limit=100000):
+    """
+    returns limit # of examples from penDigits file
+    """
+    examples=[]
+    data = open(fileString)
+    lineNum = 0
+    for line in data:
+        inVec = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        outVec = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
+        count=0
+        for val in line.split(','):
+            if count==16:
+                # print(val)
+                val = ord(val.strip()) - ord('A')
+                # print(val)
+                outVec[int(val)] = 1
+            else:
+                # print(val)
+                # inVec[count] = int(val)/100.0       #need to normalize values for inputs
+                inVec[count] = int(val)  
+
             count+=1
         examples.append((inVec,outVec))
         lineNum += 1
@@ -125,6 +155,25 @@ def buildExamplesFromPenData(size=10000):
         penDataTestList = getNNPenData("datasets/pendigitsTest.txt")
     return penDataTrainList, penDataTestList
 
+# Extra
+def buildExamplesFromExtraData(size=10000):
+    """
+    build Neural-network friendly data struct
+            
+    pen data format
+    16 input(attribute) values from 0 to 100
+    10 possible output values, corresponding to a digit from 0 to 9
+
+    """
+    if (size != 10000):
+        print(size)
+        #Fix limits 
+        letRecDataTrainList = getNNExtraData("datasets/letterRecogTrain2.txt",int(.8*size))
+        letRecDataTestList = getNNExtraData("datasets/letterRecogTest2.txt",int(.2*size))
+    else :    
+        letRecDataTrainList = getNNExtraData("datasets/letterRecogTrain2.txt")
+        letRecDataTestList = getNNExtraData("datasets/letterRecogTest2.txt")
+    return letRecDataTrainList, letRecDataTestList
 
 def buildExamplesFromCarData(size=200):
     """

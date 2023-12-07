@@ -1,4 +1,4 @@
-from NeuralNetUtil import buildExamplesFromCarData,buildExamplesFromPenData, buildExamplesFromxorData
+from NeuralNetUtil import buildExamplesFromCarData,buildExamplesFromPenData, buildExamplesFromxorData, buildExamplesFromExtraData
 from NeuralNet import buildNeuralNet
 from math import pow, sqrt
 
@@ -22,5 +22,6 @@ xorData = buildExamplesFromxorData()
 def testXorData(hiddenLayers = [16]):
     return buildNeuralNet(xorData, maxItr = 200,hiddenLayerList = hiddenLayers)
 
-# testCarData()
-
+extraData = buildExamplesFromExtraData()
+def testExtraData(hiddenLayers = [70]):
+    return buildNeuralNet(extraData, maxItr = 200, hiddenLayerList = hiddenLayers)
